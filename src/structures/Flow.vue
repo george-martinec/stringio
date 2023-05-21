@@ -14,7 +14,7 @@
     const elements = ref([
         {id: "1", type: "input", label: "Input", position: {x: 0, y: 0}},
         {id: "2", label: "upperCase", position: {x: 0, y: 100}},
-        {id: "1", type: "output", label: "Output", position: {x: 0, y: 200}},
+        {id: "3", type: "output", label: "Output", position: {x: 0, y: 200}},
     ]);
 </script>
 
