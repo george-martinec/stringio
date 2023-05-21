@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-    import { Background } from "@vue-flow/background";
+    import { Background, BackgroundVariant } from "@vue-flow/background";
     import { VueFlow } from "@vue-flow/core";
     import { MiniMap } from "@vue-flow/minimap";
     import { Controls } from '@vue-flow/controls'
@@ -22,16 +22,16 @@
     <div class="flow">
         <VueFlow v-model="elements" fit-view-on-init>
             <Background
-                    variant="dots"
-                    gap="16"
-                    size="1"
-                    patternColor="rgba(0, 0, 0, 0.5"
+                    :variant="BackgroundVariant.Dots"
+                    :gap=16
+                    :size=1
+                    :patternColor="`rgba(0, 0, 0, 0.5)`"
             />
             <MiniMap
-                    nodeColor="#000"
-                    maskColor="rgb(240, 242, 243, 0.7)"
-                    pannable
-                    zoomable
+                    :nodeColor="`rgba(0, 0, 0, 1)`"
+                    :maskColor="`rgba(240, 242, 243, 0.7)`"
+                    :pannable=true
+                    :zoomable=true
             />
             <Controls />
         </VueFlow>
