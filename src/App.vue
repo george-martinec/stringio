@@ -1,12 +1,19 @@
-<script setup>
-import Title from "./components/Title.vue";
+<script lang="ts" setup>
+    import Flow from "./structures/Flow.vue";
+    import Left from "./structures/Left.vue";
+    import Right from "./structures/Right.vue";
 </script>
 
 <template>
-    <Title />
-    test
+    <div>
+        <Left/>
+        <Flow/>
+        <Right/>
+    </div>
 </template>
 
 <style scoped>
-
+    div {
+        display: flex;
+    }
 </style>
