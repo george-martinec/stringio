@@ -1,0 +1,1 @@
+export const useBrand = () => useRuntimeConfig().public.brand;

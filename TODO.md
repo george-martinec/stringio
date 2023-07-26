@@ -1,0 +1,1 @@
+- GoogleFonts schema configs
