@@ -11,14 +11,14 @@
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",
-        "@types/node": "^18.17.0",
-        "nuxt": "^3.6.5",
         "@nuxtjs/google-fonts": "^3.0.1",
         "@nuxtjs/i18n": "8.0.0-beta.12",
         "@tailwindcss/forms": "^0.5.3",
+        "@types/node": "^18.17.0",
         "@vite-pwa/assets-generator": "^0.0.3",
         "@vite-pwa/nuxt": "^0.1.0",
         "autoprefixer": "^10.4.14",
+        "nuxt": "^3.6.5",
         "nuxt-icon": "^0.4.2",
         "postcss": "^8.4.25",
         "tailwindcss": "^3.3.2",
@@ -27,6 +27,9 @@
     "dependencies": {
         "@pinia/nuxt": "^0.4.11",
         "@vercel/analytics": "^1.0.1",
+        "@vue-flow/background": "^1.2.0",
+        "@vue-flow/core": "^1.22.2",
+        "@vueuse/core": "^10.2.1",
         "preline": "^1.9.0"
     }
 }
