@@ -15,17 +15,17 @@
     // const emit = defineEmits(['change'])
 
     const source = computed(() => ({
-        right: '-24px',
-        width: '16px',
-        height: '16px',
-        border: '2px solid var(--primary-color-600)',
+        right: '-1.5rem',
+        width: '1rem',
+        height: '1rem',
+        border: '0.2rem solid var(--primary-color-600)',
         background: 'var(--primary-color-200)'
     }))
 
     const target = computed(() => ({
-        left: '-24px',
-        width: '16px',
-        height: '16px',
+        left: '-1.5rem',
+        width: '1rem',
+        height: '1rem',
         border: '0',
         background: 'var(--primary-color-600)'
     }))

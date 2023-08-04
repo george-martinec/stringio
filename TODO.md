@@ -1,1 +1,4 @@
-- GoogleFonts schema configs
+- Nodes ring stejnáý jako bg
+- změna barvy node spojení
+- alerts
+- alerts timeout hide

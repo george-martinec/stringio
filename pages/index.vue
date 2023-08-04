@@ -21,7 +21,12 @@
     const input = ref<HTMLTextAreaElement|undefined>();
     const output = ref<HTMLTextAreaElement|undefined>();
     const content = ref<HTMLDivElement|undefined>();
-    const pastePermission = ref(false);
+    const pastePermission = ref(null);
+    const toasts = ref<{
+        message: string,
+        type: 'info'|'success'|'error'|'warning'|null,
+        time: number,
+    }[]>([]);
 
     function applyTransformation(inputValue: string) {
         return inputValue.toUpperCase();
@@ -33,6 +38,14 @@
 
     function swap() {
         input.value!.value = output.value!.value;
+    }
+
+    function toast(message: string, type: 'info'|'success'|'error'|'warning'|null, time: number) {
+        toasts.value.push({
+            message: message,
+            type: type,
+            time: time,
+        });
     }
 
     async function copy() {
@@ -47,23 +60,12 @@
     }
 
     async function paste() {
-        console.log(pastePermission.value);
-        if (pastePermission.value === false) {
-            const permissionName = "clipboard-read" as PermissionName;
-            const pastePermissionStatus = await navigator.permissions.query({
-                name: permissionName
-            });
-
-            pastePermission.value = pastePermissionStatus.state === 'granted'
-            pastePermissionStatus.onchange = () => {
-                pastePermission.value = pastePermissionStatus.state === 'granted';
-            };
-        }
-
-        if (pastePermission.value === true) {
-            const inputEl = input.value;
-            if (inputEl !== undefined) {
+        const inputEl = input.value;
+        if (inputEl !== undefined) {
+            try {
                 inputEl.value = await window.navigator.clipboard.readText();
+            } catch (exception) {
+                toast('Permission for clipboard is required', 'error', 10000);
             }
         }
     }
@@ -149,7 +151,7 @@
                     </button>
                 </div>
                 <div class="hs-tooltip inline-block [--placement:bottom] mr-4">
-                    <button @click="paste" :disabled="! pastePermission" class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400  inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
+                    <button @click="paste" :disabled="pastePermission === false" class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400  inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
                         <Icon name="lucide:clipboard-paste" size="1.5rem"/>
                         <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                           Paste
@@ -195,6 +197,7 @@
         <SettingsModal />
         <ContextMenu v-if="content" :content="content" @optionSelected="optionSelected" />
     </div>
+    <Toasts :toasts="toasts"/>
 </template>
 
 <style scoped>

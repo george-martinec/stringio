@@ -32,7 +32,16 @@ module.exports = {
                     '950': 'var(--primary-color-950)',
                     '1000': 'var(--primary-color-1000)',
                 }
-            }
+            },
+            animation: {
+                translateXOut: 'translateXOut 2s easy-in-out',
+            },
+            keyframes: theme => ({
+                translateXOut: {
+                    '0%': { transform: 'translateX(0%)' },
+                    '100%': { transform: 'translateX(100%)' },
+                },
+            }),
         },
         fontFamily: {
             sans: ['Plus Jakarta Sans', 'sans-serif'],
