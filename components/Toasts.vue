@@ -50,10 +50,10 @@
             <Info class="text-blue-500 block" size="1.25rem" />
             <div class="flex p-4 relative text-sm text-primary-800 font-medium z-20">
                 <div class="mr-3 flex" v-if="toast.type !== null">
-                    <IconCSS v-if="toast.type === 'info'" class="text-blue-500" name="lucide:badge-info" size="1.25rem" />
-                    <IconCSS v-if="toast.type === 'success'" class="text-green-500" name="lucide:badge-check" size="1.25rem" />
-                    <IconCSS v-if="toast.type === 'error'" class="text-red-500" name="lucide:badge-x" size="1.25rem" />
-                    <IconCSS v-if="toast.type === 'warning'" class="text-amber-500" name="lucide:badge-alert" size="1.25rem" />
+                    <IconCSS v-if="toast.type === 'info'" class="text-blue-500" name="lucide:info" size="1.25rem" />
+                    <IconCSS v-if="toast.type === 'success'" class="text-green-500" name="lucide:check-circle-2" size="1.25rem" />
+                    <IconCSS v-if="toast.type === 'error'" class="text-red-500" name="lucide:x-circle" size="1.25rem" />
+                    <IconCSS v-if="toast.type === 'warning'" class="text-amber-500" name="lucide:alert-circle" size="1.25rem" />
                 </div>
                 <div v-html="toast.message"></div>
             </div>
