@@ -20,6 +20,11 @@
     --primary-color-1000: #000000;
 }
 
+:root {
+    touch-action: pan-x pan-y;
+    height: 100%
+}
+
 html,
 body,
 #__nuxt,

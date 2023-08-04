@@ -4,7 +4,7 @@ import { NuxtAppConfig } from "@nuxt/schema";
 export const app: NuxtAppConfig = {
     head: {
         charset: 'utf-8',
-            viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
+            viewport: 'user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height',
             script: [
             {
                 src: '/assets/js/preline/preline.js',
@@ -15,7 +15,7 @@ export const app: NuxtAppConfig = {
         meta: [
             {
                 name: "theme-color",
-                content: "#111827"
+                content: "#e2e8f0"
             }
         ],
         link: [

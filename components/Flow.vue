@@ -2,9 +2,15 @@
     import { VueFlow, useVueFlow, MarkerType, Position, SmoothStepEdge } from '@vue-flow/core'
     import { Background, BackgroundVariant } from '@vue-flow/background'
 
+    const flow = ref<HTMLDivElement|undefined>();
+
     const props = defineProps({
         methods: {
             type: Array,
+            required: true,
+        },
+        flowGround: {
+            type: Object as PropType<HTMLDivElement|undefined>,
             required: true,
         },
     })
@@ -17,33 +23,36 @@
         elevateEdgesOnSelect: true,
         connectionRadius: 24,
         autoConnect: true,
-        minZoom: 1,
+        minZoom: 0.5,
         maxZoom: 2,
         multiSelectionKeyCode: process.client && navigator.appVersion.indexOf('Mac') !== -1 ? 'Meta' : 'Control',
-        defaultPosition: [0, 0],
+        defaultViewport: {
+            x: props.flowGround!.getBoundingClientRect().width / 2,
+            y: props.flowGround!.getBoundingClientRect().height / 2,
+            zoom: 1,
+        },
         defaultEdgeOptions: {
-            type: SmoothStepEdge,
+            type: 'smoothstep',
             updatable: true,
             selectable: true,
+            deletable: true,
             markerEnd: MarkerType.ArrowClosed,
-            strokeWidth: 8,
         }
     })
 
     vueFlow.onConnect((params) => {
         params.id = params.source + '-' + params.target;
-        params.updatable = true;
         vueFlow.addEdges([params]);
     });
 
-    function applyFlowData() {
-        vueFlow.setNodes([
+    onMounted(() => {
+        vueFlow.addNodes([
             {
                 id: '1',
                 type: 'custom',
                 position: {
-                    x: 100,
-                    y: 100,
+                    x: -174 / 2,
+                    y: -46 / 2,
                 },
                 data: {
                     initial: true,
@@ -57,10 +66,9 @@
                 type: 'custom',
                 position: {
                     x: 200,
-                    y: 200,
+                    y: -46 / 2,
                 },
                 data: {
-                    initial: false,
                     method: props.methods[0],
                 },
                 targetPosition: Position.Left,
@@ -70,25 +78,21 @@
                 id: '3',
                 type: 'custom',
                 position: {
-                    x: 300,
-                    y: 300,
+                    x: 500,
+                    y: -46 / 2,
                 },
                 data: {
-                    initial: false,
                     method: props.methods[0],
                 },
                 targetPosition: Position.Left,
                 sourcePosition: Position.Right,
             },
         ]);
-        vueFlow.setEdges([
+
+        vueFlow.addEdges([
             { id: '1-2', source: '1', target: '2'},
             { id: '2-3', source: '2', target: '3'},
         ]);
-    }
-
-    onMounted(() => {
-        applyFlowData();
     });
 </script>
 

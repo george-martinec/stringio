@@ -14,8 +14,8 @@ export const pwa: ModuleOptions = {
     manifest: {
         name: brand.name,
         short_name: brand.shortName,
-        theme_color: '#000000',
-        background_color: '#000000',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
         id: '/',
         start_url: '/',
         icons: [

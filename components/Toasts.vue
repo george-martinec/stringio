@@ -25,29 +25,31 @@
     }
 
     onMounted(() => {
-        toasts.value!.addEventListener('DOMNodeInserted', (event) => {
-            const element = event.target as HTMLDivElement;
-            setTimeout(() => {
-                element.style.opacity = '1';
-                element.style.transform = 'none';
-            }, 0);
+        new MutationObserver(function(mutations) {
+            mutations.forEach((record) => {
+                record.addedNodes.forEach((node) => {
+                    const element = node as HTMLDivElement;
 
-            const time = parseInt(element.getAttribute('time') ?? '');
-            if (time !== 0) {
-                console.log(element, time);
-                setTimeout(() => {
-                    remove(element);
-                }, time)
-            }
-        })
+                    setTimeout(() => {
+                        element.style.opacity = '1';
+                        element.style.transform = 'none';
+                    }, 1);
+
+                    const time = parseInt(element.getAttribute('time') ?? '');
+                    if (time !== 0) {
+                        setTimeout(() => {
+                            remove(element);
+                        }, time)
+                    }
+                });
+            });
+        }).observe(toasts.value!, { childList: true });
     });
 </script>
 
 <template>
-    <div ref="toasts" class="flex flex-col fixed top-12 p-2 md:p-0 md:top-20 md:right-8 z-[50] pointer-events-none">
-        <Info class="text-blue-500 block" size="1.25rem" />
-        <div v-for="(toast) in props.toasts" :time="toast.time" @click="remove($event.currentTarget)" class="mt-4 select-none ml-auto pointer-events-auto cursor-pointer ease-in-out relative hs-removing:translate-x-5 translate-x-5 hs-removing:opacity-0 transition-[transform,opacity] duration-500 opacity-0 shadow-sm bg-primary-50 hover:bg-primary-100 rounded-md overflow-hidden" role="alert">
-            <Info class="text-blue-500 block" size="1.25rem" />
+    <div ref="toasts" class="flex flex-col fixed top-12 p-3 md:p-0 md:top-20 right-0 md:right-8 z-[50] pointer-events-none">
+        <div v-for="(toast) in props.toasts" :time="toast.time" @click="remove($event.currentTarget)" @touchstart="remove($event.currentTarget)" class="mt-4 select-none ml-auto pointer-events-auto cursor-pointer ease-in-out relative hs-removing:translate-x-5 translate-x-5 hs-removing:opacity-0 transition-[transform,opacity] duration-500 opacity-0 shadow-sm bg-primary-50 md:hover:bg-primary-100 rounded-md overflow-hidden" role="alert">
             <div class="flex p-4 relative text-sm text-primary-800 font-medium z-20">
                 <div class="mr-3 flex" v-if="toast.type !== null">
                     <IconCSS v-if="toast.type === 'info'" class="text-blue-500" name="lucide:info" size="1.25rem" />
