@@ -34,15 +34,23 @@
         input.value!.value = output.value!.value;
     }
 
-    function copy() {
+    async function copy() {
         const outputEl = output.value;
         if (outputEl !== undefined) {
-            console.log(outputEl, outputEl.value);
             outputEl.select();
             outputEl.setSelectionRange(0, Number.MAX_SAFE_INTEGER);
             window.isSecureContext
-                ? window.navigator.clipboard.writeText(outputEl.value)
+                ? await window.navigator.clipboard.writeText(outputEl.value)
                 : document.execCommand('copy');
+        }
+    }
+
+    async function paste() {
+        const inputEl = input.value;
+        if (inputEl !== undefined) {
+            inputEl.value = window.isSecureContext
+                ? await window.navigator.clipboard.readText()
+                : '';
         }
     }
 
@@ -83,23 +91,15 @@
                 </div>
 
                 <div class="hs-tooltip inline-block [--placement:bottom] mr-1">
-                    <button class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-r-none">
-                        <Icon name="lucide:clipboard-copy" size="1.5rem"/>
+                    <button disabled class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-r-none">
+                        <Icon name="lucide:copy" size="1.5rem"/>
                         <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
-                          Copy
-                        </span>
-                    </button>
-                </div>
-                <div class="hs-tooltip inline-block [--placement:bottom] mr-1">
-                    <button class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-r-none rounded-l-none">
-                        <Icon name="lucide:clipboard-paste" size="1.5rem"/>
-                        <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
-                          Paste
+                          Duplicate
                         </span>
                     </button>
                 </div>
                 <div class="hs-tooltip inline-block [--placement:bottom] mr-4">
-                    <button class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
+                    <button disabled class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
                         <Icon name="lucide:trash-2" size="1.5rem"/>
                         <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                           Delete
@@ -126,6 +126,23 @@
             </div>
 
             <div right class="flex">
+                <div class="hs-tooltip inline-block [--placement:bottom] mr-1">
+                    <button @click="copy" class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-r-none">
+                        <Icon name="lucide:clipboard-copy" size="1.5rem"/>
+                        <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
+                          Copy
+                        </span>
+                    </button>
+                </div>
+                <div class="hs-tooltip inline-block [--placement:bottom] mr-4">
+                    <button @click="paste" class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
+                        <Icon name="lucide:clipboard-paste" size="1.5rem"/>
+                        <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
+                          Paste
+                        </span>
+                    </button>
+                </div>
+
                 <div class="hs-tooltip inline-block [--placement:bottom]" data-hs-overlay="#hs-settings-modal">
                     <button class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
                         <Icon name="lucide:settings" size="1.5rem"/>
@@ -142,10 +159,10 @@
             </div>
 
             <div right class="flex flex-row absolute bottom-0 md:p-8 w-full">
-                <div class="w-full md:rounded-md overflow-hidden md:focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 transition-all">
-                    <textarea ref="input" @input="onInput()" class="h-[16rem] flex-1 p-4 block w-full resize-none shadow-sm z-10 bg-primary-50 text-primary-800 text-sm outline-none border-0 border-r border-primary-300 md:border-none md:border-transparent outline-none focus:ring-0 focus:border-primary-300" autofocus placeholder="Input"></textarea>
+                <div class="w-full md:rounded-md shadow-sm md:focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-primary-200 focus-within:ring-offset-2 transition-all">
+                    <textarea ref="input" @input="onInput()" class="md:rounded-md h-[16rem] flex-1 p-4 block w-full resize-none z-10 bg-primary-50 text-primary-800 text-sm outline-none border-0 border-r border-primary-300 md:border-none md:border-transparent outline-none focus:ring-0 focus:border-primary-300" autofocus placeholder="Input"></textarea>
                 </div>
-                <div class="flex-0 self-center m-2 hidden md:flex">
+                <div class="flex-0 self-center gap-2 m-2 hidden md:flex flex-col">
                     <div class="hs-tooltip inline-block">
                         <button @click="swap()" class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
                             <Icon name="lucide:arrow-down-up" class="rotate-90" size="1.5rem"/>
@@ -155,8 +172,8 @@
                         </button>
                     </div>
                 </div>
-                <div class="w-full md:rounded-md overflow-hidden md:focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 transition-all">
-                    <textarea ref="output" @click="copy" class="h-[16rem] flex-1 p-4 block w-full resize-none shadow-sm z-10 bg-primary-50 text-primary-800 text-sm outline-none border-none border-transparent outline-none focus:ring-0" readonly placeholder="Output"></textarea>
+                <div class="w-full md:rounded-md shadow-sm md:focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-primary-200 focus-within:ring-offset-2 transition-all">
+                    <textarea ref="output" @click="copy" class="md:rounded-md h-[16rem] flex-1 p-4 block w-full resize-none z-10 bg-primary-50 text-primary-800 text-sm outline-none border-0 border-r border-primary-300 md:border-none md:border-transparent outline-none focus:ring-0 focus:border-primary-300" readonly placeholder="Output"></textarea>
                 </div>
             </div>
         </main>
