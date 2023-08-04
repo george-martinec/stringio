@@ -1,10 +1,17 @@
 <script setup lang="ts">
-    import { onMounted, defineEmits } from 'vue'
+    import { onMounted } from 'vue'
     import { onClickOutside } from '@vueuse/core'
 
     const emit = defineEmits([
         "optionSelected",
     ]);
+
+    const props = defineProps({
+        content: {
+            type: Object as PropType<HTMLDivElement|undefined>,
+            required: true,
+        },
+    })
 
     const options = ref([
         {
@@ -34,22 +41,22 @@
         emit("optionSelected", action)
     }
 
-    const contextMenu = ref<HTMLDivElement>()
     const open = ref(false);
+    const contextMenu = ref<HTMLDivElement|undefined>();
     onMounted(() => {
-        window.addEventListener('contextmenu', (event) => {
-            event.preventDefault();
-            open.value = false;
-            Timeout.start(() => {
-                const contextMenuElStyle = contextMenu.value?.style;
-                if (contextMenuElStyle !== undefined) {
-                    contextMenuElStyle.top = event.y + "px";
-                    contextMenuElStyle.left = event.x + "px";
+        const contextMenuEl = contextMenu.value;
+        if (contextMenuEl !== undefined) {
+            props.content!.addEventListener('contextmenu', (event) => {
+                event.preventDefault();
+                open.value = false;
+                Timeout.start(() => {
+                    contextMenuEl.style.top = event.y + "px";
+                    contextMenuEl.style.left = event.x + "px";
                     open.value = true;
-                }
-            }, 60);
-        })
-        onClickOutside(contextMenu, () => open.value = false);
+                }, 60);
+            })
+            onClickOutside(contextMenuEl, () => open.value = false);
+        }
     });
 </script>
 

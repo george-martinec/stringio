@@ -1,28 +1,37 @@
 <script setup lang="ts">
-    import { VueFlow, useVueFlow, MarkerType, Position } from '@vue-flow/core'
+    import { VueFlow, useVueFlow, MarkerType, Position, SmoothStepEdge } from '@vue-flow/core'
     import { Background, BackgroundVariant } from '@vue-flow/background'
+
+    const props = defineProps({
+        methods: {
+            type: Array,
+            required: true,
+        },
+    })
 
     const vueFlow = useVueFlow({
         edgeUpdaterRadius: 24,
-        // snapToGrid: true,
-        // snapGrid: [24, 24],
+        snapToGrid: true,
+        snapGrid: [8, 8],
         deleteKeyCode: 'Delete',
         elevateEdgesOnSelect: true,
-        defaultZoom: 1,
+        connectionRadius: 24,
+        autoConnect: true,
         minZoom: 1,
-        maxZoom: 1,
-        edgeTypes: 'smoothstep',
+        maxZoom: 2,
         multiSelectionKeyCode: process.client && navigator.appVersion.indexOf('Mac') !== -1 ? 'Meta' : 'Control',
-        // defaultEdgeOptions: {
-        //     type: 'custom',
-        //     updatable: true,
-        //     selectable: true,
-        //     markerEnd: MarkerType.ArrowClosed,
-        // }
+        defaultPosition: [0, 0],
+        defaultEdgeOptions: {
+            type: SmoothStepEdge,
+            updatable: true,
+            selectable: true,
+            markerEnd: MarkerType.ArrowClosed,
+            strokeWidth: 8,
+        }
     })
 
     vueFlow.onConnect((params) => {
-        params.class = `source-${params.sourceHandle} target-${params.targetHandle}`;
+        params.id = params.source + '-' + params.target;
         params.updatable = true;
         vueFlow.addEdges([params]);
     });
@@ -31,52 +40,51 @@
         vueFlow.setNodes([
             {
                 id: '1',
-                // source: '1',
-                target: '2',
-                // type: 'custom',
-                draggable: true,
-                // connectable: true,
-                type: "output",
+                type: 'custom',
                 position: {
-                    x: 0,
-                    y: 0,
+                    x: 100,
+                    y: 100,
                 },
+                data: {
+                    initial: true,
+                    method: props.methods[0],
+                },
+                targetPosition: Position.Left,
                 sourcePosition: Position.Right,
-                targetPosition: Position.Right,
             },
             {
                 id: '2',
-                source: '1',
-                // type: 'custom',
-                draggable: true,
-                connectable: true,
+                type: 'custom',
                 position: {
-                    x: 0,
-                    y: 0,
+                    x: 200,
+                    y: 200,
                 },
-                targetPosition: Position.Right,
-                sourcePosition: Position.Left,
+                data: {
+                    initial: false,
+                    method: props.methods[0],
+                },
+                targetPosition: Position.Left,
+                sourcePosition: Position.Right,
             },
             {
                 id: '3',
-                // source: '2',
-                // type: 'custom',
-                draggable: true,
-                connectable: true,
+                type: 'custom',
                 position: {
-                    x: 0,
-                    y: 0,
+                    x: 300,
+                    y: 300,
                 },
-                targetPosition: Position.Right,
-                sourcePosition: Position.Left,
+                data: {
+                    initial: false,
+                    method: props.methods[0],
+                },
+                targetPosition: Position.Left,
+                sourcePosition: Position.Right,
             },
         ]);
-        // editor.setEdges(props.data?.edges || []);
-        // editor.setTransform({
-        //     x: props.data?.x || 0,
-        //     y: props.data?.y || 0,
-        //     zoom: props.data?.zoom || 1,
-        // });
+        vueFlow.setEdges([
+            { id: '1-2', source: '1', target: '2'},
+            { id: '2-3', source: '2', target: '3'},
+        ]);
     }
 
     onMounted(() => {
@@ -86,13 +94,8 @@
 
 <template>
     <VueFlow>
-        <template #node-custom="props">
-            <select class="w-[240px] h-[48px] pr-9 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400">-->
-                <option selected>UpperCase</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-            </select>
+        <template #node-custom="node">
+            <Node :node="{...node}" :methods="props.methods"/>
         </template>
         <Background
             :variant="BackgroundVariant.Dots"
