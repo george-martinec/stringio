@@ -21,6 +21,7 @@
     const input = ref<HTMLTextAreaElement|undefined>();
     const output = ref<HTMLTextAreaElement|undefined>();
     const content = ref<HTMLDivElement|undefined>();
+    const pastePermission = ref(false);
 
     function applyTransformation(inputValue: string) {
         return inputValue.toUpperCase();
@@ -46,11 +47,24 @@
     }
 
     async function paste() {
-        const inputEl = input.value;
-        if (inputEl !== undefined) {
-            inputEl.value = window.isSecureContext
-                ? await window.navigator.clipboard.readText()
-                : '';
+        console.log(pastePermission.value);
+        if (pastePermission.value === false) {
+            const permissionName = "clipboard-read" as PermissionName;
+            const pastePermissionStatus = await navigator.permissions.query({
+                name: permissionName
+            });
+
+            pastePermission.value = pastePermissionStatus.state === 'granted'
+            pastePermissionStatus.onchange = () => {
+                pastePermission.value = pastePermissionStatus.state === 'granted';
+            };
+        }
+
+        if (pastePermission.value === true) {
+            const inputEl = input.value;
+            if (inputEl !== undefined) {
+                inputEl.value = await window.navigator.clipboard.readText();
+            }
         }
     }
 
@@ -69,7 +83,7 @@
         },
     ])
 
-    onMounted(() => {
+    onMounted(async () => {
         // Tooltip fix
         [...document.body.getElementsByClassName('hs-tooltip')].forEach(
             (element) => element.addEventListener('mouseleave', () => {element.classList.remove('show')})
@@ -135,7 +149,7 @@
                     </button>
                 </div>
                 <div class="hs-tooltip inline-block [--placement:bottom] mr-4">
-                    <button @click="paste" class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
+                    <button @click="paste" :disabled="! pastePermission" class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400  inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
                         <Icon name="lucide:clipboard-paste" size="1.5rem"/>
                         <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                           Paste
