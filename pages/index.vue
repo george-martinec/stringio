@@ -51,11 +51,16 @@
     async function copy() {
         const outputEl = output.value;
         if (outputEl !== undefined) {
-            outputEl.select();
-            outputEl.setSelectionRange(0, Number.MAX_SAFE_INTEGER);
-            window.isSecureContext
-                ? await window.navigator.clipboard.writeText(outputEl.value)
-                : document.execCommand('copy');
+            if (outputEl.value === '') {
+                toast('Output is empty', 'info', 5000);
+            } else {
+                outputEl.select();
+                outputEl.setSelectionRange(0, Number.MAX_SAFE_INTEGER);
+                window.isSecureContext
+                    ? await window.navigator.clipboard.writeText(outputEl.value)
+                    : document.execCommand('copy');
+                toast('Output was copied successfully !', 'success', 5000);
+            }
         }
     }
 
