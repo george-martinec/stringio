@@ -71,7 +71,7 @@
                 inputEl.value = await window.navigator.clipboard.readText();
                 toast('Clipboard contents pasted successfully !', 'success', 5000);
             } catch (exception) {
-                toast('Permission for clipboard is required', 'error', 10000);
+                toast('Permission for clipboard is required !', 'error', 10000);
             }
         }
     }
