@@ -69,9 +69,9 @@
         if (inputEl !== undefined) {
             try {
                 inputEl.value = await window.navigator.clipboard.readText();
-                toast('Pasted successfully !', 'success', 5000);
+                toast('Clipboard contents pasted successfully !', 'success', 5000);
             } catch (exception) {
-                toast('Clipboard contents pasted successfully !', 'error', 10000);
+                toast('Permission for clipboard is required', 'error', 10000);
             }
         }
     }
