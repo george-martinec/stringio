@@ -49,6 +49,10 @@
         });
     }
 
+    function remove(element: HTMLDivElement) {
+        console.log(element);
+    }
+
     async function copy() {
         const outputEl = output.value;
         if (outputEl !== undefined) {
@@ -126,7 +130,7 @@
                     </button>
                 </div>
                 <div class="hidden md:inline-block hs-tooltip [--placement:bottom] mr-4">
-                    <button disabled class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
+                    <button @mouseenter="remove($event.currentTarget)" class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
                         <Icon name="lucide:trash-2" size="1.5rem"/>
                         <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                           Delete
@@ -217,7 +221,7 @@
                 </button>
             </div>
             <div class="hs-tooltip inline-block [--placement:top]">
-                <button disabled class="disabled:bg-primary-200 disabled:text-primary-400 hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
+                <button @click="remove($event.currentTarget)" disabled class="disabled:bg-primary-200 disabled:text-primary-400 hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
                     <Icon name="lucide:trash-2" size="1.5rem"/>
                     <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                       Delete

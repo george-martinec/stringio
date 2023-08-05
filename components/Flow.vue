@@ -36,7 +36,6 @@
             updatable: true,
             selectable: true,
             deletable: true,
-            markerEnd: MarkerType.ArrowClosed,
         }
     })
 
@@ -111,6 +110,13 @@
 </template>
 
 <style>
-    @import '@vue-flow/core/dist/style.css';
-    @import '@vue-flow/core/dist/theme-default.css';
+    .vue-flow__edge-path, .vue-flow__connection-path {
+        stroke: var(--primary-color-400);
+        stroke-width: 3px;
+        fill: none;
+    }
+
+    .vue-flow__edge.selected .vue-flow__edge-path, .vue-flow__edge:focus .vue-flow__edge-path, .vue-flow__edge:focus-visible .vue-flow__edge-path {
+        stroke: var(--primary-color-600);
+    }
 </style>

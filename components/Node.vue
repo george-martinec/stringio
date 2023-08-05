@@ -18,6 +18,7 @@
         right: '-1.5rem',
         width: '1rem',
         height: '1rem',
+        borderRadius: '1rem',
         border: '0.2rem solid var(--primary-color-600)',
         background: 'var(--primary-color-200)'
     }))
@@ -26,6 +27,7 @@
         left: '-1.5rem',
         width: '1rem',
         height: '1rem',
+        borderRadius: '1rem',
         border: '0',
         background: 'var(--primary-color-600)'
     }))
