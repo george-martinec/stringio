@@ -20,8 +20,14 @@
     const methodsEnum = {
         UPPER_CASE: "UPPER_CASE",
         LOWER_CASE: "LOWER_CASE",
+        CAPITAL_CASE: "CAPITAL_CASE",
         SNAKE_CASE: "SNAKE_CASE",
+        PASCAL_CASE: "PASCAL_CASE",
+        CAMEL_CASE: "CAMEL_CASE",
         KEBAB_CASE: "KEBAB_CASE",
+        HEADER_CASE: "HEADER_CASE",
+        CONSTANT_CASE: "CONSTANT_CASE",
+        TITLE_CASE: "TITLE_CASE",
     }
     const methods = ref([
         {
@@ -35,14 +41,44 @@
             icon: 'mdi:format-letter-case-lower',
         },
         {
+            name: 'Capital case',
+            enum: methodsEnum.CAPITAL_CASE,
+            icon: 'mdi:format-letter-starts-with',
+        },
+        {
             name: 'snake_case',
             enum: methodsEnum.SNAKE_CASE,
             icon: 'mdi:snake',
         },
         {
+            name: 'PascalCase',
+            enum: methodsEnum.PASCAL_CASE,
+            icon: 'mdi:format-letter-matches',
+        },
+        {
+            name: 'camelCase',
+            enum: methodsEnum.CAMEL_CASE,
+            icon: 'game-icons:camel',
+        },
+        {
             name: 'kebab-case',
             enum: methodsEnum.KEBAB_CASE,
             icon: 'material-symbols:kebab-dining-outline',
+        },
+        {
+            name: 'Header-Case',
+            enum: methodsEnum.HEADER_CASE,
+            icon: 'mdi:format-header-1',
+        },
+        {
+            name: 'CONSTANT_CASE',
+            enum: methodsEnum.CONSTANT_CASE,
+            icon: 'material-symbols:code-rounded',
+        },
+        {
+            name: 'Title Case',
+            enum: methodsEnum.TITLE_CASE,
+            icon: 'material-symbols:title',
         },
     ])
 
@@ -87,20 +123,37 @@
     }
 
     function applyTransformation(inputValue: string) {
-
         activeMethods.value.forEach((activeMethod) => {
             switch (activeMethod.enum) {
                 case methodsEnum.UPPER_CASE:
-                    inputValue = Case.upper(inputValue);
+                    inputValue = inputValue.toUpperCase();
                     break;
                 case methodsEnum.LOWER_CASE:
-                    inputValue = Case.lower(inputValue);
+                    inputValue = inputValue.toLowerCase();
+                    break;
+                case methodsEnum.CAPITAL_CASE:
+                    inputValue = Case.capital(inputValue);
                     break;
                 case methodsEnum.SNAKE_CASE:
                     inputValue = Case.snake(inputValue);
                     break;
+                case methodsEnum.PASCAL_CASE:
+                    inputValue = Case.pascal(inputValue);
+                    break;
+                case methodsEnum.CAMEL_CASE:
+                    inputValue = Case.camel(inputValue);
+                    break;
                 case methodsEnum.KEBAB_CASE:
                     inputValue = Case.kebab(inputValue);
+                    break;
+                case methodsEnum.HEADER_CASE:
+                    inputValue = Case.header(inputValue);
+                    break;
+                case methodsEnum.CONSTANT_CASE:
+                    inputValue = Case.constant(inputValue);
+                    break;
+                case methodsEnum.TITLE_CASE:
+                    inputValue = Case.title(inputValue);
                     break;
             }
         })
