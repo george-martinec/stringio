@@ -3,19 +3,7 @@
     import { Background, BackgroundVariant } from '@vue-flow/background'
     import { ElementData } from "@vue-flow/core/dist/types/flow";
     import { PropType } from "@vue/runtime-core";
-
-    const anyNodeSelected = ref(false);
-    const anyEdgeSelected = ref(false);
-    const latestNode = ref<GraphNode|null>(null);
-    const latestEdge = ref<GraphEdge|null>(null);
-    const latestPosition = ref({
-        x: -174 / 2,
-        y: -46 / 2
-    });
-
-    const emit = defineEmits([
-        'anyNodeOrEdgeSelected'
-    ])
+    import { onMounted } from "vue";
 
     const props = defineProps({
         methods: {
@@ -27,6 +15,19 @@
             required: true,
         },
     })
+
+    const sortedEdges = ref([]);
+    const methods = ref([]);
+
+    const canOpen = ref(true);
+    const anyNodeSelected = ref(false);
+    const anyEdgeSelected = ref(false);
+    const latestNode = ref<GraphNode|null>(null);
+    const latestEdge = ref<GraphEdge|null>(null);
+    const latestPosition = ref({
+        x: (props.flowGround!.getBoundingClientRect().width / 2) + -174 / 2,
+        y: (props.flowGround!.getBoundingClientRect().height / 2) + -46 / 2
+    });
 
     const vueFlow = useVueFlow({
         edgeUpdaterRadius: 24,
@@ -40,8 +41,8 @@
         maxZoom: 2,
         multiSelectionKeyCode: process.client && navigator.appVersion.indexOf('Mac') !== -1 ? 'Meta' : 'Control',
         defaultViewport: {
-            x: props.flowGround!.getBoundingClientRect().width / 2,
-            y: props.flowGround!.getBoundingClientRect().height / 2,
+            x: 0,
+            y: 0,
             zoom: 1,
         },
         defaultEdgeOptions: {
@@ -71,6 +72,9 @@
                 anyNodeSelected.value = false;
             }
         })
+
+        canOpen.value = vueFlow.getSelectedNodes.value.length <= 1 && vueFlow.getSelectedEdges.value.length < 1;
+        resolveNodesMethods();
     })
 
     vueFlow.onEdgesChange((EdgeChanges) => {
@@ -83,6 +87,9 @@
                 anyEdgeSelected.value = false;
             }
         })
+
+        canOpen.value = vueFlow.getSelectedEdges.value.length < 1;
+        resolveNodesMethods();
     })
 
     vueFlow.onNodeDragStop((NodeDragEvent) => {
@@ -92,10 +99,45 @@
     });
 
     watch([anyNodeSelected, anyEdgeSelected], ([node, edge]) => {
+        const isSelected = node === true || edge === true;
         emit('anyNodeOrEdgeSelected', {
-            selected: node === true || edge === true
+            selected: isSelected
         });
     });
+
+    function sortEdges(target: string) {
+        const edge = vueFlow.getEdges.value.filter((edge) => edge.source === target)[0];
+        if (edge !== undefined) {
+            sortedEdges.value.push(edge)
+            sortEdges(edge.target);
+        }
+    }
+
+    function resolveNodesMethods() {
+        methods.value = [];
+        let edgesData = [];
+        sortedEdges.value = [];
+
+        edgesData.push(JSON.parse(JSON.stringify(vueFlow.getNodes.value[0].data)));
+
+        const rootEdge = vueFlow.getEdges.value.filter((edge) => edge.source === "0")[0];
+        if (rootEdge !== undefined) {
+            sortedEdges.value.push(rootEdge);
+            sortEdges(rootEdge.target);
+        }
+
+        sortedEdges.value.forEach((sortedEdge) => {
+            edgesData.push(sortedEdge.targetNode.data);
+        })
+
+        edgesData.forEach((edgeData) => {
+            methods.value.push(edgeData.method);
+        })
+
+        emit('methodsChanged', {
+            methods: methods.value
+        });
+    }
 
     function add(position: null|{
         x: number,
@@ -104,8 +146,8 @@
         vueFlow.getSelectedNodes.value.forEach((GraphNode) => GraphNode.selected = false);
         const id = (latestNode.value ? parseInt(latestNode.value.id) : 0) + 1;
         const calculatedPosition = {
-            x: (position ? position.x : latestPosition.value.x) + 32,
-            y: (position ? position.y : latestPosition.value.y) + 32,
+            x: position ? position.x : (latestPosition.value.x + 32),
+            y: position ? position.y : (latestPosition.value.y + 32),
         }
 
         const node = {
@@ -194,6 +236,11 @@
         duplicate,
     });
 
+    const emit = defineEmits([
+        'anyNodeOrEdgeSelected',
+        'methodsChanged',
+    ])
+
     onMounted(() => {
         vueFlow.addNodes([
             {
@@ -220,7 +267,7 @@
 <template>
     <VueFlow>
         <template #node-custom="node">
-            <Node :node="{...node}" :methods="props.methods"/>
+            <Node :node="{...node}" :methods="props.methods" :canOpen="canOpen"/>
         </template>
         <Background
             :variant="BackgroundVariant.Dots"

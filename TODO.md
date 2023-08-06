@@ -1,2 +1,3 @@
 - undo redo https://github.com/bcakmakoglu/vue-flow/discussions/367
 - https://driverjs.com/
+- add connection rule for target must be larger then current id, and source must be smaller than current id

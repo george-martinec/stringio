@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import Case from 'case';
     import { onMounted } from 'vue'
     import Flow from "~/components/Flow.vue";
 
@@ -14,6 +15,36 @@
         //     class: 'dark',
         // },
     });
+
+    const activeMethods = ref([]);
+    const methodsEnum = {
+        UPPER_CASE: "UPPER_CASE",
+        LOWER_CASE: "LOWER_CASE",
+        SNAKE_CASE: "SNAKE_CASE",
+        KEBAB_CASE: "KEBAB_CASE",
+    }
+    const methods = ref([
+        {
+            name: 'UPPERCASE',
+            enum: methodsEnum.UPPER_CASE,
+            icon: 'mdi:format-letter-case-upper',
+        },
+        {
+            name: 'lowercase',
+            enum: methodsEnum.LOWER_CASE,
+            icon: 'mdi:format-letter-case-lower',
+        },
+        {
+            name: 'snake_case',
+            enum: methodsEnum.SNAKE_CASE,
+            icon: 'mdi:snake',
+        },
+        {
+            name: 'kebab-case',
+            enum: methodsEnum.KEBAB_CASE,
+            icon: 'material-symbols:kebab-dining-outline',
+        },
+    ])
 
     const input = ref<HTMLTextAreaElement|undefined>();
     const output = ref<HTMLTextAreaElement|undefined>();
@@ -40,7 +71,7 @@
                 remove();
                 break;
             case 'add':
-                add(option.data);
+                add(option.data.position);
                 break;
         }
     }
@@ -50,8 +81,31 @@
         canRemove.value = args.selected;
     }
 
+    function methodsChanged(args) {
+        activeMethods.value = args.methods;
+        onInput();
+    }
+
     function applyTransformation(inputValue: string) {
-        return inputValue.toUpperCase();
+
+        activeMethods.value.forEach((activeMethod) => {
+            switch (activeMethod.enum) {
+                case methodsEnum.UPPER_CASE:
+                    inputValue = Case.upper(inputValue);
+                    break;
+                case methodsEnum.LOWER_CASE:
+                    inputValue = Case.lower(inputValue);
+                    break;
+                case methodsEnum.SNAKE_CASE:
+                    inputValue = Case.snake(inputValue);
+                    break;
+                case methodsEnum.KEBAB_CASE:
+                    inputValue = Case.kebab(inputValue);
+                    break;
+            }
+        })
+
+        return inputValue;
     }
 
     function onInput() {
@@ -60,6 +114,7 @@
 
     function swap() {
         input.value!.value = output.value!.value;
+        onInput();
     }
 
     function toast(message: string, type: 'info'|'success'|'error'|'warning'|null, time: number) {
@@ -107,30 +162,12 @@
             try {
                 inputEl.value = await window.navigator.clipboard.readText();
                 toast('Clipboard contents pasted successfully !', 'success', 5000);
+                onInput();
             } catch (exception) {
                 toast('Permission for clipboard is required !', 'error', 10000);
             }
         }
     }
-
-    const methods = ref([
-        {
-            name: 'UPPERCASE',
-            icon: 'mdi:format-letter-case-upper',
-        },
-        {
-            name: 'lowercase',
-            icon: 'mdi:format-letter-case-lower',
-        },
-        {
-            name: 'snake_case',
-            icon: 'mdi:snake',
-        },
-        {
-            name: 'kebab-case',
-            icon: 'material-symbols:kebab-dining-outline',
-        },
-    ])
 
     onMounted(async () => {
         // Tooltip fix
@@ -218,7 +255,7 @@
         </header>
         <main class="flex flex-1 bg-primary-200 relative">
             <div class="w-full h-full" ref="content">
-                <Flow ref="flow" v-if="flowGround" :flowGround="flowGround" :methods="methods" @anyNodeOrEdgeSelected="anyNodeOrEdgeSelected"/>
+                <Flow ref="flow" v-if="flowGround" :flowGround="flowGround" :methods="methods" @anyNodeOrEdgeSelected="anyNodeOrEdgeSelected" @methodsChanged="methodsChanged"/>
             </div>
 
             <div class="flex flex-col absolute top-0 right-0 bottom-0 left-0 pointer-events-none">

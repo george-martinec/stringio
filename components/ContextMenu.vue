@@ -2,10 +2,6 @@
     import { onMounted } from 'vue'
     import { onClickOutside } from '@vueuse/core'
 
-    const emit = defineEmits([
-        "optionSelected",
-    ]);
-
     const props = defineProps({
         content: {
             type: Object as PropType<HTMLDivElement|undefined>,
@@ -13,6 +9,16 @@
         },
     })
 
+    interface openDataInterface {
+        position: {
+            x: number,
+            y: number,
+        }
+    }
+
+    const open = ref(false);
+    const contextMenu = ref<HTMLDivElement|undefined>();
+    const openData = ref<openDataInterface|undefined>();
     const options = ref([
         {
             action: 'add',
@@ -34,15 +40,12 @@
     function optionSelected(action: string) {
         let option = {
             action: action,
-            data: {},
+            data: undefined as openDataInterface|undefined,
         };
 
         switch (option.action) {
             case 'add':
-                option.data = {
-                    x: 300,
-                    y: 300,
-                }
+                option.data = openData._rawValue
                 break;
         }
 
@@ -50,8 +53,10 @@
         emit("optionSelected", option)
     }
 
-    const open = ref(false);
-    const contextMenu = ref<HTMLDivElement|undefined>();
+    const emit = defineEmits([
+        "optionSelected",
+    ]);
+
     onMounted(() => {
         const contextMenuEl = contextMenu.value;
         if (contextMenuEl !== undefined) {
@@ -59,9 +64,16 @@
                 event.preventDefault();
                 open.value = false;
                 Timeout.start(() => {
-                    contextMenuEl.style.top = event.y + "px";
+                    const eventTargetBoundingClientRect = event.target!.getBoundingClientRect();
                     contextMenuEl.style.left = event.x + "px";
+                    contextMenuEl.style.top = event.y + "px";
                     open.value = true;
+                    openData.value = {
+                        position: {
+                            x: event.x - eventTargetBoundingClientRect.x,
+                            y: event.y - eventTargetBoundingClientRect.y,
+                        }
+                    }
                 }, 60);
             })
             onClickOutside(contextMenuEl, () => open.value = false);

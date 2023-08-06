@@ -10,6 +10,10 @@
             type: Array,
             required: true,
         },
+        canOpen: {
+            type: Boolean,
+            required: true,
+        }
     })
 
     const source = computed(() => ({
@@ -39,7 +43,7 @@
 </script>
 
 <template>
-    <div class="hs-dropdown relative inline-flex">
+    <div :class="canOpen ? 'hs-dropdown' : ''" class="relative inline-flex">
         <button id="hs-dropdown-node" type="button" :class="props.node.selected === true ? 'border-primary-500 hover:border-primary-500' : ''" class="dropdown hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-4 rounded-md font-medium bg-primary-50 text-primary-700 shadow-sm align-middle hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary-200 focus:ring-primary-600 transition-all text-sm">
             <Icon :name="currentMethod.icon" size="1.25rem"/>
             <div>{{currentMethod.name}}</div>

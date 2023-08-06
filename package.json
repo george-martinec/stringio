@@ -30,6 +30,7 @@
         "@vue-flow/background": "^1.2.0",
         "@vue-flow/core": "^1.22.2",
         "@vueuse/core": "^10.2.1",
+        "case": "^1.6.3",
         "preline": "^1.9.0"
     }
 }
