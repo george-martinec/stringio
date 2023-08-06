@@ -1,4 +1,2 @@
-- Nodes ring stejnáý jako bg
-- změna barvy node spojení
-- alerts
-- alerts timeout hide
+- undo redo https://github.com/bcakmakoglu/vue-flow/discussions/367
+- https://driverjs.com/

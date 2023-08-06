@@ -25,15 +25,29 @@
             icon: 'lucide:copy',
         },
         {
-            action: 'delete',
+            action: 'remove',
             label: 'Delete',
             icon: 'lucide:trash-2',
         },
     ]);
 
     function optionSelected(action: string) {
+        let option = {
+            action: action,
+            data: {},
+        };
+
+        switch (option.action) {
+            case 'add':
+                option.data = {
+                    x: 300,
+                    y: 300,
+                }
+                break;
+        }
+
         open.value = false;
-        emit("optionSelected", action)
+        emit("optionSelected", option)
     }
 
     const open = ref(false);

@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import { onMounted } from 'vue'
+    import Flow from "~/components/Flow.vue";
 
     useHead({
         title: useI18n().t("pages.index.head.title"),
@@ -14,20 +15,40 @@
         // },
     });
 
-    function optionSelected(action: string) {
-        console.log(action);
-    }
-
     const input = ref<HTMLTextAreaElement|undefined>();
     const output = ref<HTMLTextAreaElement|undefined>();
     const content = ref<HTMLDivElement|undefined>();
     const flowGround = ref<HTMLDivElement|undefined>();
+
+    const flow = ref(Flow);
+    const canDuplicate = ref(false);
+    const canRemove = ref(false);
+
     const pastePermission = ref(null);
     const toasts = ref<{
         message: string,
         type: 'info'|'success'|'error'|'warning'|null,
         time: number,
     }[]>([]);
+
+    function optionSelected(option: {
+        action: string,
+        data: any,
+    }) {
+        switch (option.action) {
+            case 'remove':
+                remove();
+                break;
+            case 'add':
+                add(option.data);
+                break;
+        }
+    }
+
+    function anyNodeOrEdgeSelected(args) {
+        canDuplicate.value = args.selected;
+        canRemove.value = args.selected;
+    }
 
     function applyTransformation(inputValue: string) {
         return inputValue.toUpperCase();
@@ -49,8 +70,19 @@
         });
     }
 
-    function remove(element: HTMLDivElement) {
-        console.log(element);
+    function add(position: {
+        x: number,
+        y: number,
+    }|undefined) {
+        flow.value.add(position);
+    }
+
+    function duplicate() {
+        flow.value.duplicate();
+    }
+
+    function remove() {
+        flow.value.remove();
     }
 
     async function copy() {
@@ -113,7 +145,7 @@
         <header class="flex p-3 md:px-8 shadow-sm z-10 bg-primary-50">
             <div left class="flex flex-1">
                 <div class="hidden md:inline-block hs-tooltip [--placement:bottom] mr-4">
-                    <button class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
+                    <button @click="add(null)" class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
                         <Icon name="lucide:plus" size="1.5rem"/>
                         <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                           Add
@@ -122,7 +154,7 @@
                 </div>
 
                 <div class="hidden md:inline-block hs-tooltip [--placement:bottom] mr-1">
-                    <button disabled class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-r-none">
+                    <button @click="duplicate" :disabled="!canDuplicate" class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-r-none">
                         <Icon name="lucide:copy" size="1.5rem"/>
                         <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                           Duplicate
@@ -130,7 +162,7 @@
                     </button>
                 </div>
                 <div class="hidden md:inline-block hs-tooltip [--placement:bottom] mr-4">
-                    <button @mouseenter="remove($event.currentTarget)" class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
+                    <button @click="remove" :disabled="!canRemove" class="hs-tooltip-toggle p-2 disabled:bg-primary-200 disabled:text-primary-400 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-l-none">
                         <Icon name="lucide:trash-2" size="1.5rem"/>
                         <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                           Delete
@@ -186,7 +218,7 @@
         </header>
         <main class="flex flex-1 bg-primary-200 relative">
             <div class="w-full h-full" ref="content">
-                <Flow v-if="flowGround" :flowGround="flowGround" :methods="methods"/>
+                <Flow ref="flow" v-if="flowGround" :flowGround="flowGround" :methods="methods" @anyNodeOrEdgeSelected="anyNodeOrEdgeSelected"/>
             </div>
 
             <div class="flex flex-col absolute top-0 right-0 bottom-0 left-0 pointer-events-none">
@@ -213,7 +245,7 @@
         </main>
         <footer class="flex justify-center md:hidden gap-8 p-3 shadow-sm z-10 bg-primary-50">
             <div class="hs-tooltip inline-block [--placement:top]">
-                <button disabled class="disabled:bg-primary-200 disabled:text-primary-400 hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
+                <button @click="duplicate" :disabled="!canDuplicate" class="disabled:bg-primary-200 disabled:text-primary-400 hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
                     <Icon name="lucide:copy" size="1.5rem"/>
                     <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                       Duplicate
@@ -221,7 +253,7 @@
                 </button>
             </div>
             <div class="hs-tooltip inline-block [--placement:top]">
-                <button @click="remove($event.currentTarget)" disabled class="disabled:bg-primary-200 disabled:text-primary-400 hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
+                <button @click="remove" :disabled="!canRemove" class="disabled:bg-primary-200 disabled:text-primary-400 hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
                     <Icon name="lucide:trash-2" size="1.5rem"/>
                     <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                       Delete
@@ -229,7 +261,7 @@
                 </button>
             </div>
             <div class="hs-tooltip inline-block [--placement:top]">
-                <button class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
+                <button @click="add(null)" class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0">
                     <Icon name="lucide:plus" size="1.5rem"/>
                     <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 top-0 left-0 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-primary-600 text-xs font-medium text-white rounded-md shadow-sm" role="tooltip">
                       Add
