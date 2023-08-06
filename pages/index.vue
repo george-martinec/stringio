@@ -178,10 +178,10 @@
         });
     }
 
-    function add(position: {
+    function add(position: null|{
         x: number,
         y: number,
-    }|undefined) {
+    }) {
         flow.value.add(position);
     }
 
@@ -222,7 +222,28 @@
         }
     }
 
-    onMounted(async () => {
+    function bindCtrlKeyCombo(key: string, callback: {(): void}, preventDefault: boolean = true) {
+        document.addEventListener("keydown", function(e) {
+            if (e.key === key && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+                if (preventDefault) {
+                    e.preventDefault();
+                }
+
+                callback();
+            }
+        }, false);
+    }
+
+    function isInputOrOutputFocused() {
+        return document.activeElement === input.value || document.activeElement === output.value;
+    }
+
+    onMounted(() => {
+        bindCtrlKeyCombo('v', () => ! isInputOrOutputFocused() ? paste() : null, false);
+        bindCtrlKeyCombo('c', () => ! isInputOrOutputFocused() ? copy() : null, false);
+        bindCtrlKeyCombo('k', () => add(null));
+        bindCtrlKeyCombo('d', () => duplicate());
+
         // Tooltip fix
         [...document.body.getElementsByClassName('hs-tooltip')].forEach(
             (element) => element.addEventListener('mouseleave', () => {element.classList.remove('show')})
@@ -260,6 +281,7 @@
                     </button>
                 </div>
 
+                <!--
                 <div class="hs-tooltip inline-block [--placement:bottom] mr-1">
                     <button class="hs-tooltip-toggle p-2 inline-flex rounded-md bg-primary-200 text-primary-800 align-middle hover:bg-primary-300 outline-none ring-0 rounded-r-none">
                         <Icon name="lucide:undo-2" size="1.5rem"/>
@@ -276,6 +298,7 @@
                         </span>
                     </button>
                 </div>
+                -->
             </div>
 
             <div right class="flex">

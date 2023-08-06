@@ -40,6 +40,16 @@
         currentMethod.value = method;
         props.node.data.method = currentMethod.value;
     }
+
+    function isValidConnection(connection) {
+
+        console.log(connection);
+        if (connection.source === connection.target) {
+            return false;
+        }
+
+        return true;
+    }
 </script>
 
 <template>
@@ -58,8 +68,8 @@
         </div>
     </div>
 
-    <Handle v-if="props.node.data.initial !== true" type="target" :position="props.node.targetPosition" :style="target" />
-    <Handle type="source" :position="props.node.sourcePosition" :style="source" />
+    <Handle v-if="props.node.data.initial !== true" type="target" :position="props.node.targetPosition" :style="target" :is-valid-connection="isValidConnection" />
+    <Handle type="source" :position="props.node.sourcePosition" :style="source" :is-valid-connection="isValidConnection" />
 </template>
 
 <style scoped>
